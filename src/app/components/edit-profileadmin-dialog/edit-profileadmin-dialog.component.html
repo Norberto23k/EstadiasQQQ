@@ -1,0 +1,83 @@
+<h2 mat-dialog-title>Editar Perfil</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="editForm" class="edit-form">
+    <!-- Sección de imagen -->
+    <div class="image-section">
+      <mat-card *ngIf="imagePreview" class="image-card">
+        <img [src]="imagePreview" alt="Preview" class="image-preview">
+        <mat-card-actions>
+          <button mat-icon-button color="warn" (click)="removeImage()">
+            <mat-icon>delete</mat-icon>
+          </button>
+          <button mat-icon-button color="primary" (click)="fileInput.click()">
+            <mat-icon>edit</mat-icon>
+          </button>
+        </mat-card-actions>
+      </mat-card>
+
+      <div *ngIf="!imagePreview" class="upload-area" (click)="fileInput.click()">
+        <mat-icon>add_photo_alternate</mat-icon>
+        <p>Seleccionar imagen</p>
+      </div>
+
+      <input #fileInput type="file" accept="image/*" (change)="onFileSelected($event)" style="display: none;">
+    </div>
+
+    <!-- Campo de nombre (cambiado de 'name' a 'nombre') -->
+    <mat-form-field appearance="outline">
+      <mat-label>Nombre Completo</mat-label>
+      <input matInput formControlName="nombre" required>
+      <mat-icon matSuffix>person</mat-icon>
+      <mat-error *ngIf="editForm.get('nombre')?.hasError('required')">
+        El nombre es requerido
+      </mat-error>
+      <mat-error *ngIf="editForm.get('nombre')?.hasError('minlength')">
+        Mínimo 3 caracteres
+      </mat-error>
+    </mat-form-field>
+
+
+    <!-- Campo de email (se mantiene igual) -->
+    <mat-form-field appearance="outline">
+      <mat-label>Email</mat-label>
+      <input matInput formControlName="email" type="email" required>
+      <mat-icon matSuffix>email</mat-icon>
+      <mat-error *ngIf="editForm.get('email')?.hasError('required')">
+        El email es requerido
+      </mat-error>
+      <mat-error *ngIf="editForm.get('email')?.hasError('email')">
+        Email inválido
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Campo de contraseña (se mantiene igual) -->
+    <mat-form-field appearance="outline">
+      <mat-label>Nueva Contraseña</mat-label>
+      <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password">
+      <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hidePassword">
+        <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+      </button>
+      <mat-hint>Dejar en blanco para mantener la contraseña actual</mat-hint>
+      <mat-error *ngIf="editForm.get('password')?.hasError('minlength')">
+        La contraseña debe tener al menos 6 caracteres
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Checkbox de términos (se mantiene igual) -->
+    <mat-checkbox formControlName="termsAccepted" color="primary">
+      Acepto los términos y condiciones
+    </mat-checkbox>
+    <mat-error *ngIf="editForm.get('termsAccepted')?.hasError('requiredTrue')" class="checkbox-error">
+      Debes aceptar los términos y condiciones
+    </mat-error>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancelar</button>
+  <button mat-raised-button color="primary" (click)="onSave()" [disabled]="editForm.invalid || isSaving">
+    <span *ngIf="!isSaving">Guardar Cambios</span>
+    <span *ngIf="isSaving">Guardando...</span>
+  </button>
+</mat-dialog-actions>

@@ -1,0 +1,177 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Nuevo Material</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cancel()">
+        <ion-icon name="close" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding" [fullscreen]="true">
+  <form (ngSubmit)="saveMaterial()" #materialForm="ngForm">
+    <!-- Carrusel de imágenes -->
+    <div class="swiper-container">
+      <swiper-container #swiperContainer class="custom-swiper">
+        <swiper-slide *ngFor="let imagen of selectedMaterial.imagenes; let i = index">
+          <img [src]="imagen" class="slide-image" alt="Imagen del material">
+          <ion-fab vertical="top" horizontal="end" slot="fixed">
+            <ion-fab-button size="small" color="danger" (click)="removeImage(i)">
+              <ion-icon name="trash"></ion-icon>
+            </ion-fab-button>
+          </ion-fab>
+        </swiper-slide>
+      </swiper-container>
+      
+      <!-- Botón para añadir imágenes -->
+      <ion-button expand="block" fill="outline" class="add-image-btn" (click)="fileInput.click()">
+        <ion-icon name="add" slot="start"></ion-icon>
+        Añadir Imagen ({{selectedMaterial.imagenes?.length || 0}}/5)
+      </ion-button>
+      <input type="file" #fileInput accept="image/*" style="display: none" 
+             (change)="loadImage($event)" multiple>
+    </div>
+
+    <!-- Formulario -->
+    <div class="form-section">
+      <ion-list lines="full">
+        <ion-item>
+          <ion-label position="floating">Nombre del Material <span class="required">*</span></ion-label>
+          <ion-input #nombreInput [(ngModel)]="selectedMaterial.nombre" name="nombre" required></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="floating">Descripción</ion-label>
+          <ion-textarea [(ngModel)]="selectedMaterial.descripcion" name="descripcion" rows="3"></ion-textarea>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="floating">Modelo</ion-label>
+          <ion-input [(ngModel)]="selectedMaterial.modelo" name="modelo"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="floating">Código de Serie</ion-label>
+          <ion-input [(ngModel)]="selectedMaterial.codigoSerie" name="codigoSerie"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label>Categoría <span class="required">*</span></ion-label>
+          <ion-select [(ngModel)]="selectedMaterial.categoria" name="categoria" interface="action-sheet" required>
+            <ion-select-option *ngFor="let cat of categorias" [value]="cat">{{cat}}</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <ion-item>
+          <ion-label>Estado <span class="required">*</span></ion-label>
+          <div class="estado-container">
+            <ion-button class="estado-btn estado-disponible" 
+                      [color]="selectedMaterial.estado === 'Disponible' ? 'success' : 'light'"
+                      (click)="changeStatus('Disponible')">
+              <ion-icon name="checkmark-circle" slot="start"></ion-icon>
+              <span *ngIf="selectedMaterial.estado === 'Disponible'">Disponible</span>
+            </ion-button>
+            
+            <ion-button class="estado-btn estado-ocupado" 
+                      [color]="selectedMaterial.estado === 'Ocupado' ? 'warning' : 'light'"
+                      (click)="changeStatus('Ocupado')">
+              <ion-icon name="close-circle" slot="start"></ion-icon>
+              <span *ngIf="selectedMaterial.estado === 'Ocupado'">Ocupado</span>
+            </ion-button>
+            
+            <ion-button class="estado-btn estado-reparacion" 
+                      [color]="selectedMaterial.estado === 'Reparación' ? 'danger' : 'light'"
+                      (click)="changeStatus('Reparación')">
+              <ion-icon name="construct" slot="start"></ion-icon>
+              <span *ngIf="selectedMaterial.estado === 'Reparación'">Reparación</span>
+            </ion-button>
+          </div>
+        </ion-item>
+      </ion-list>
+    </div>
+  </form>
+</ion-content>
+
+<ion-footer class="footer-toolbar">
+  <ion-toolbar>
+    <ion-buttons slot="end">
+      <ion-button (click)="cancel()" fill="outline" [disabled]="isSaving">Cancelar</ion-button>
+      <ion-button (click)="saveMaterial()" [disabled]="!isFormValid() || isSaving" color="primary" strong>
+        <ion-icon name="save" slot="start"></ion-icon>
+        <ion-spinner *ngIf="isSaving" name="lines" slot="end"></ion-spinner>
+        {{ isSaving ? 'Guardando...' : 'Guardar Material' }}
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-footer>
+
+<style>
+  .swiper-container {
+    margin-bottom: 20px;
+  }
+  
+  .custom-swiper {
+    height: 250px;
+    margin-bottom: 10px;
+  }
+  
+  .slide-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .add-image-btn {
+    margin-top: 10px;
+  }
+  
+  .form-section {
+    margin-top: 20px;
+  }
+  
+  .required {
+    color: var(--ion-color-danger);
+  }
+  
+  .estado-container {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .estado-btn {
+    --border-radius: 8px;
+    --padding-start: 12px;
+    --padding-end: 12px;
+    --box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border: 1px solid var(--ion-color-medium);
+    transition: all 0.3s ease;
+    flex: 1;
+  }
+  
+  .estado-btn:hover {
+    transform: translateY(-2px);
+    --box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  }
+  
+  .estado-disponible[color="success"] {
+    --background: var(--ion-color-success);
+    --color: white;
+  }
+  
+  .estado-ocupado[color="warning"] {
+    --background: var(--ion-color-warning);
+    --color: white;
+  }
+  
+  .estado-reparacion[color="danger"] {
+    --background: var(--ion-color-danger);
+    --color: white;
+  }
+  
+  .footer-toolbar {
+    padding: 10px;
+  }
+</style>

@@ -1,0 +1,76 @@
+/* Estilos generales */
+ion-content {
+  --padding-bottom: 80px;
+}
+
+/* Sección de imágenes */
+.images-section {
+  margin-bottom: 20px;
+}
+
+.image-preview-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.image-preview {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  ion-button {
+    --padding-start: 0;
+    --padding-end: 0;
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 30px;
+    height: 30px;
+  }
+}
+
+/* Formulario */
+.form-list {
+  background: transparent;
+}
+
+/* Segmento de estado */
+ion-segment {
+  ion-segment-button {
+    --color: var(--ion-color-medium);
+    --color-checked: var(--ion-color-primary-contrast);
+    
+    &[value="Disponible"] {
+      --indicator-color: var(--ion-color-success);
+    }
+    
+    &[value="Ocupado"] {
+      --indicator-color: var(--ion-color-warning);
+    }
+    
+    &[value="Reparación"] {
+      --indicator-color: var(--ion-color-danger);
+    }
+  }
+}
+
+/* Botón flotante */
+ion-fab-button {
+  --background: var(--ion-color-primary);
+  --background-activated: var(--ion-color-primary-shade);
+  
+  &[disabled] {
+    --background: var(--ion-color-medium);
+  }
+}

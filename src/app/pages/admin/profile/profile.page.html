@@ -1,0 +1,43 @@
+<div class="ion-page">
+  <ion-header>
+    <ion-toolbar>
+      <ion-title>Perfil</ion-title>
+      <ion-buttons slot="end">
+        <ion-button (click)="logout()">
+          <ion-icon slot="icon-only" name="log-out-outline"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content class="ion-padding">
+    <div class="profile-container">
+      <div *ngIf="isLoading" class="loading-spinner">
+        <ion-spinner name="crescent"></ion-spinner>
+      </div>
+
+      <div *ngIf="!isLoading && user" class="profile-content">
+        <div class="avatar-section">
+          <div class="avatar-circle" (click)="changeProfileImage()">
+            <img *ngIf="profileImage" [src]="profileImage" alt="Profile Image" class="profile-image">
+            <span *ngIf="!profileImage">{{ getAvatarInitials(user.name) }}</span>
+            <div class="edit-icon">
+              <ion-icon name="camera-outline"></ion-icon>
+            </div>
+          </div>
+          <h2>{{ user.name }}</h2>
+          <p>{{ user.email }}</p>
+        </div>
+
+
+        <div class="actions-section">
+          <ion-button expand="block" (click)="openEditDialog()" fill="outline">
+            <ion-icon slot="start" name="create-outline"></ion-icon>
+            Editar Perfil
+          </ion-button>
+
+        </div>
+      </div>
+    </div>
+  </ion-content>
+</div>

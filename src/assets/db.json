@@ -1,0 +1,206 @@
+{
+  "users": [
+    {
+      "id": "5d8d",
+      "name": "Norberto Ivan Lopez Cuevas",
+      "email": "utti222015@utvco.edu.mx",
+      "matricula": "UTTI222015",
+      "grupo": "T-601",
+      "password": "Dreeck23",
+      "terms": true,
+      "role": "admin",
+      "imageUrl": null,
+      "termsAccepted": true,
+      "updatedAt": "2025-06-09T17:51:59.276Z"
+    },
+    {
+      "id": "e178",
+      "name": "Norberto Omar Lopez Concha",
+      "email": "prueba@utvco.edu.mx",
+      "matricula": "utti222015",
+      "grupo": "t 601",
+      "password": "dreeck23",
+      "terms": true,
+      "role": "user",
+      "imageUrl": null,
+      "termsAccepted": true,
+      "matricule": "utti222085",
+      "group": "t - 605",
+      "updatedAt": "2025-06-10T21:08:25.489Z"
+    },
+    {
+      "id": "9rwrc0t",
+      "name": "Angel omar",
+      "email": "angel@gmail.com",
+      "password": "Angel23",
+      "role": "admin",
+      "createdAt": "2025-06-09T17:08:21.837Z",
+      "updatedAt": "2025-06-09T17:08:21.837Z"
+    },
+    {
+      "id": "4be9",
+      "email": "prueba@utvco.edu.mx",
+      "password": "dreeck23"
+    },
+    {
+      "id": "af93",
+      "email": "prueba@utvco.edu.mx",
+      "password": "dreeck23"
+    },
+    {
+      "id": "b60e",
+      "email": "prueba@utvco.edu.mx",
+      "password": "dreeck23"
+    },
+    {
+      "id": "052a",
+      "email": "prueba@utvco.edu.mx",
+      "password": "dreeck23"
+    },
+    {
+      "id": "bafe",
+      "email": "utti222015@utvco.edu.mx",
+      "password": "Dreeck23"
+    }
+  ],
+  "materiales": [
+    {
+      "id": "0d9c",
+      "nombre": "proyector 03",
+      "descripcion": "Proyector quars con cable hdmi y fuente de poder",
+      "imagen": [
+        "assets/ojos.jpg"
+      ],
+      "estado": "Ocupado",
+      "categoria": "Proyectores",
+      "imagenes": [],
+      "especificacionesTecnicas": {},
+      "historialPrestamos": [],
+      "mantenimientos": [],
+      "fechaRegistro": "2025-06-13T15:36:27.148Z",
+      "codigoQR": ""
+    },
+    {
+      "id": "7482",
+      "nombre": "multimeto",
+      "descripcion": "lksn jw h xhs xo xoh",
+      "imagen": [
+        "assets/ojos.jpg"
+      ],
+      "estado": "Disponible",
+      "categoria": "Instumentos de medicion",
+      "imagenes": [],
+      "especificacionesTecnicas": {},
+      "historialPrestamos": [],
+      "mantenimientos": [],
+      "fechaRegistro": "2025-06-13T15:37:28.859Z",
+      "codigoQR": ""
+    }
+  ],
+  "categorias": [
+    {
+      "id": "1",
+      "nombre": "Proyectores"
+    },
+    {
+      "id": "2",
+      "nombre": "Componentes Electronicos"
+    },
+    {
+      "id": "3",
+      "nombre": "Herramientas"
+    },
+    {
+      "id": "4",
+      "nombre": "Accesorios"
+    },
+    {
+      "id": "5",
+      "nombre": "Materiales Elecricos"
+    },
+    {
+      "id": "6",
+      "nombre": "Instumentos de medicion"
+    }
+  ],
+  "estados": [
+    {
+      "id": "1",
+      "nombre": "Disponible"
+    },
+    {
+      "id": "2",
+      "nombre": "Ocupado"
+    },
+    {
+      "id": "3",
+      "nombre": "Reparación"
+    }
+  ],
+  "loans": [
+    {
+      "id": "1",
+      "materialId": "033a",
+      "userId": "5d8d",
+      "startDate": "2023-11-01",
+      "endDate": "2023-11-15",
+      "status": "active"
+    }
+  ],
+  "reservations": [
+    {
+      "id": "rsv1",
+      "materialId": "033a",
+      "userId": "e178",
+      "fechaInicio": "2025-06-15T10:00:00",
+      "fechaFin": "2025-06-15T12:00:00",
+      "estado": "Pendiente",
+      "fechaSolicitud": "2025-06-13T09:00:00"
+    },
+    {
+      "id": "9093",
+      "userId": "e178",
+      "materialId": "71b9",
+      "fechaInicio": "2025-06-13T21:00:00.000Z",
+      "fechaFin": "2025-06-13T22:00:00.000Z",
+      "estado": "Pendiente",
+      "fechaSolicitud": "2025-06-13T16:22:18.210Z"
+    },
+    {
+      "id": "a2a2",
+      "userId": "5d8d",
+      "materialId": "033a",
+      "fechaInicio": "2025-06-13T18:00:00.000Z",
+      "fechaFin": "2025-06-13T19:00:00.000Z",
+      "estado": "Pendiente",
+      "fechaSolicitud": "2025-06-13T17:19:31.665Z"
+    },
+    {
+      "id": "7ae4",
+      "userId": "5d8d",
+      "materialId": "033a",
+      "fechaInicio": "2025-06-14T00:00:00.000Z",
+      "fechaFin": "2025-06-14T01:00:00.000Z",
+      "estado": "Pendiente",
+      "fechaSolicitud": "2025-06-13T17:41:54.921Z"
+    },
+    {
+      "id": "ecbb",
+      "userId": "5d8d",
+      "materialId": "033a",
+      "fechaInicio": "2025-06-13T23:00:00.000Z",
+      "fechaFin": "2025-06-14T00:00:00.000Z",
+      "estado": "Pendiente",
+      "fechaSolicitud": "2025-06-13T19:22:54.921Z"
+    }
+  ],
+  "notifications": [
+    {
+      "id": "notif1",
+      "userId": "5d8d",
+      "message": "Nuevo material creado: multimetro",
+      "fecha": "2025-06-13T09:15:00",
+      "type": "admin_notification"
+    }
+  ]
+}

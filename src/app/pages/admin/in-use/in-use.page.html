@@ -1,0 +1,71 @@
+<ion-content>
+  <!-- Loading state -->
+  <div *ngIf="isLoading" class="ion-text-center ion-padding">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Cargando materiales en uso...</p>
+  </div>
+
+  <!-- Error state -->
+  <div *ngIf="error" class="ion-text-center ion-padding">
+    <ion-icon name="warning-outline" size="large" color="danger"></ion-icon>
+    <p>{{ error }}</p>
+    <ion-button (click)="loadMaterialsInUse()" fill="clear" color="primary">
+      <ion-icon slot="start" name="refresh-outline"></ion-icon>
+      Reintentar
+    </ion-button>
+  </div>
+
+  <!-- Success state -->
+  <div *ngIf="!isLoading && !error">
+    <ion-refresher slot="fixed" (ionRefresh)="refresh($event)">
+      <ion-refresher-content></ion-refresher-content>
+    </ion-refresher>
+
+    <ion-list *ngIf="materiales.length > 0">
+      <ion-item-sliding *ngFor="let material of materiales; trackBy: trackByMaterialId">
+        <ion-item (click)="viewDetail(material.id)">
+          <ion-thumbnail slot="start">
+            <img [src]="material.imagenes[0] || 'assets/imgs/default-item.jpg'" 
+                 [alt]="material.nombre"
+                 class="thumbnail-img">
+          </ion-thumbnail>
+          
+          <ion-label>
+            <h2>{{ material.nombre }}</h2>
+            <p><strong>Modelo:</strong> {{ material.modelo }}</p>
+            <p><strong>Categoría:</strong> {{ material.categoria }}</p>
+            
+            <div *ngIf="getActiveLoan(material) as prestamo">
+              <p><strong>En uso desde:</strong> {{ formatDate(prestamo.fechaPrestamo) }}</p>
+              <p><strong>Vence:</strong> {{ prestamo.fechaDevolucion ? formatDate(prestamo.fechaDevolucion) : 'Sin fecha' }}</p>
+              <p><strong>Notas:</strong> {{ prestamo.notas || 'Ninguna' }}</p>
+            </div>
+          </ion-label>
+
+          <ion-badge [color]="getStatusColor(material.estado)" slot="end">
+            {{ material.estado }}
+          </ion-badge>
+        </ion-item>
+
+        <ion-item-options side="end">
+          <ion-item-option color="warning" (click)="initiateReturn(material)">
+            <ion-icon slot="icon-only" name="arrow-undo-outline"></ion-icon>
+          </ion-item-option>
+          <ion-item-option color="danger" (click)="reportProblem(material)">
+            <ion-icon slot="icon-only" name="alert-circle-outline"></ion-icon>
+          </ion-item-option>
+        </ion-item-options>
+      </ion-item-sliding>
+    </ion-list>
+
+    <div *ngIf="materiales.length === 0" class="ion-text-center ion-padding">
+      <ion-icon name="cube-outline" size="large" color="medium"></ion-icon>
+      <h3>No hay materiales en uso</h3>
+      <p>Todos los materiales están disponibles actualmente</p>
+      <ion-button (click)="loadMaterialsInUse()" fill="clear" color="medium">
+        <ion-icon slot="start" name="refresh-outline"></ion-icon>
+        Actualizar
+      </ion-button>
+    </div>
+  </div>
+</ion-content>

@@ -1,0 +1,29 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Historial</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-item>
+    <ion-label>Desde</ion-label>
+    <ion-datetime display-format="DD/MM/YYYY" [(ngModel)]="fechaInicio"></ion-datetime>
+  </ion-item>
+
+  <ion-item>
+    <ion-label>Hasta</ion-label>
+    <ion-datetime display-format="DD/MM/YYYY" [(ngModel)]="fechaFin"></ion-datetime>
+  </ion-item>
+
+  <ion-button expand="block" (click)="buscar()">Buscar</ion-button>
+
+  <ion-card *ngFor="let item of historial">
+    <ion-card-header>
+      <ion-card-title>{{ item.tipo }} - {{ item.materialId }}</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <p>Fecha: {{ formatearFecha(item.fechaInicio || item.fechaSolicitud) }}</p>
+      <p>Estado: <strong [style.color]="getEstadoColor(item.estado)">{{ item.estado }}</strong></p>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

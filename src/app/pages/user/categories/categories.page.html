@@ -1,0 +1,63 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/tab1"></ion-back-button>
+    </ion-buttons>
+
+    <ion-title>
+      {{filtroCategoria ? (filtroCategoria | uppercase) : 'CATEGORÍAS'}}
+    </ion-title>
+
+    <ion-buttons slot="end">
+      <ion-button (click)="abrirFiltro()">
+        <img src="assets/icon/filtrar.svg" alt="Filtrar" style="width: 24px; height: 24px;">
+      </ion-button>
+      <ion-select #selectEstado interface="popover" [(ngModel)]="filtroEstado">
+        <ion-select-option value="">Todos</ion-select-option>
+        <ion-select-option value="Disponible">Disponible</ion-select-option>
+        <ion-select-option value="Ocupado">Ocupado</ion-select-option>
+        <ion-select-option value="Reparación">Reparación</ion-select-option>
+      </ion-select>
+    </ion-buttons>
+
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <!-- Mensaje de carga -->
+  <div *ngIf="isLoading" class="loading-message">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Cargando materiales...</p>
+  </div>
+
+  <!-- Mensaje de error -->
+  <div *ngIf="errorMessage" class="error-message">
+    {{errorMessage}}
+    <ion-button (click)="cargarDatos()">Reintentar</ion-button>
+  </div>
+
+  <!-- Lista vacía -->
+  <div *ngIf="!isLoading && itemsFiltrados.length === 0" class="empty-message">
+    No se encontraron materiales
+  </div>
+
+  <!-- Lista de materiales -->
+  <ion-list *ngIf="!isLoading && itemsFiltrados.length > 0">
+    <ion-card *ngFor="let item of itemsFiltrados" class="item-card" (click)="verDetalle(item.id)">
+      <ion-item lines="none">
+        <div class="img-container" slot="start">
+          <ion-img [src]="item.imagenes" alt="{{item.nombre}}"></ion-img>
+        </div>
+
+        <ion-label class="item-content">
+          <div class="estado">{{ item.estado }}</div>
+          <h3 class="titulo">{{ item.nombre }}</h3>
+          <p class="descripcion">{{ item.descripcion }}</p>
+          <p class="categoria">{{ item.categoria }}</p>
+        </ion-label>
+
+        <div class="estado-dot" [ngStyle]="{ 'background-color': getEstadoColor(item.estado) }"></div>
+      </ion-item>
+    </ion-card>
+  </ion-list>
+</ion-content>

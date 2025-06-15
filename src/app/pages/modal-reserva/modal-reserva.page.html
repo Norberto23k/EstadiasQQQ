@@ -1,0 +1,60 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Reservar Material</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cancelar()">
+        <ion-icon name="close" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding" [scrollY]="false">
+  <div class="reservation-container">
+    <div class="time-selector animate__animated animate__fadeIn">
+      <ion-card class="time-card">
+        <ion-card-header>
+          <ion-card-title>Selecciona el horario</ion-card-title>
+          <ion-card-subtitle>Horas disponibles: 8:00 - 20:00</ion-card-subtitle>
+        </ion-card-header>
+
+        <ion-card-content>
+          <div class="time-grid">
+            <ion-chip *ngFor="let hour of availableHours" 
+                     [color]="isHourSelected(hour) ? 'primary' : (isHourBooked(hour) ? 'danger' : 'medium')"
+                     (click)="toggleHourSelection(hour)"
+                     class="hour-chip animate__animated animate__zoomIn"
+                     [class.selected]="isHourSelected(hour)"
+                     [class.booked]="isHourBooked(hour)">
+              {{ hour }}:00
+              <ion-icon *ngIf="isHourBooked(hour)" name="alert-circle" class="warning-icon"></ion-icon>
+            </ion-chip>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <div *ngIf="selectedHours.length > 0" class="selection-summary animate__animated animate__slideInUp">
+        <ion-item lines="none">
+          <ion-label>
+            <h2>Reserva seleccionada</h2>
+            <p>{{ selectedHours[0] }}:00 - {{ selectedHours[selectedHours.length - 1] + 1 }}:00</p>
+            <p *ngIf="hasBookedHours" class="warning-text">
+              <ion-icon name="warning"></ion-icon> Algunas horas seleccionadas ya están reservadas
+            </p>
+          </ion-label>
+        </ion-item>
+      </div>
+    </div>
+
+    <div class="action-buttons animate__animated animate__fadeInUp">
+      <ion-button expand="block" shape="round" (click)="confirmar()" [disabled]="selectedHours.length === 0 || hasBookedHours" class="confirm-button">
+        <ion-icon name="checkmark-circle" slot="start"></ion-icon>
+        Confirmar Reserva
+      </ion-button>
+      
+      <ion-button expand="block" fill="clear" (click)="cancelar()" class="cancel-button">
+        Cancelar
+      </ion-button>
+    </div>
+  </div>
+</ion-content>

@@ -1,0 +1,54 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="cancel()">
+        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Registrar Préstamo</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="confirm()" [disabled]="!loanData.endDate">
+        <ion-icon slot="icon-only" name="checkmark-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-item>
+    <ion-label>Material:</ion-label>
+    <ion-label slot="end" color="primary">{{material.nombre}}</ion-label>
+  </ion-item>
+
+  <ion-item>
+    <ion-label>Fecha/Hora de Devolución:</ion-label>
+    <ion-datetime-button datetime="returnDateTime"></ion-datetime-button>
+    <ion-modal [keepContentsMounted]="true">
+      <ng-template>
+        <ion-datetime 
+          id="returnDateTime" 
+          [(ngModel)]="loanData.endDate"
+          [min]="getMinDate()"
+          [max]="getMaxDate()"
+          presentation="date-time"
+          locale="es-MX">
+        </ion-datetime>
+      </ng-template>
+    </ion-modal>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked">Propósito del préstamo</ion-label>
+    <ion-select [(ngModel)]="loanData.purpose" interface="popover">
+      <ion-select-option value="clase">Uso en clase</ion-select-option>
+      <ion-select-option value="proyecto">Proyecto académico</ion-select-option>
+      <ion-select-option value="investigacion">Investigación</ion-select-option>
+      <ion-select-option value="otro">Otro</ion-select-option>
+    </ion-select>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked">Notas adicionales</ion-label>
+    <ion-textarea [(ngModel)]="loanData.notes" rows="3"></ion-textarea>
+  </ion-item>
+</ion-content>

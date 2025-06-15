@@ -1,0 +1,33 @@
+<ion-tabs>
+  <ion-tab-bar slot="bottom">
+    <!-- Tab 1: In Use -->
+    <ion-tab-button tab="in-use">
+      <img src="assets/icon/visualizacion.svg" alt="In Use" style="width: 24px; height: 24px;">
+      <ion-label>En Uso</ion-label>
+    </ion-tab-button>
+
+    <!-- Tab 2: History -->
+    <ion-tab-button tab="history">
+      <img src="assets/icon/Historial.svg" alt="History" style="width: 24px; height: 24px;">
+      <ion-label>Historial</ion-label>
+    </ion-tab-button>
+
+    <!-- Tab 3: Categories -->
+    <ion-tab-button tab="categories" (click)="abrirFiltroCategorias()" >
+      <img src="assets/icon/filtrar.svg" alt="Categories" style="width: 24px; height: 24px;">
+      <ion-label>Categorías</ion-label>
+    </ion-tab-button>
+
+    <!-- Tab 4: Add Material -->
+    <ion-tab-button tab="add-material">
+      <img src="assets/icon/documento.svg" alt="Add Material" style="width: 24px; height: 24px;">
+      <ion-label>Agregar</ion-label>
+    </ion-tab-button>
+
+    <!-- Tab 5: Profile -->
+    <ion-tab-button tab="profile">
+      <img src="assets/icon/usuario.svg" alt="Profile" style="width: 24px; height: 24px;">
+      <ion-label>Perfil</ion-label>
+    </ion-tab-button>
+  </ion-tab-bar>
+</ion-tabs>

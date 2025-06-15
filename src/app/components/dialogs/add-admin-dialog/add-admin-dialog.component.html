@@ -1,0 +1,53 @@
+<h2 mat-dialog-title>Añadir Nuevo Administrador</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="adminForm" class="admin-form">
+    <mat-form-field appearance="outline">
+      <mat-label>Nombre Completo</mat-label>
+      <input matInput formControlName="name" required>
+      <mat-icon matSuffix>person</mat-icon>
+      <mat-error *ngIf="adminForm.get('name')?.hasError('required')">
+        El nombre es requerido
+      </mat-error>
+      <mat-error *ngIf="adminForm.get('name')?.hasError('minlength')">
+        Mínimo 3 caracteres
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Email</mat-label>
+      <input matInput formControlName="email" type="email" required>
+      <mat-icon matSuffix>email</mat-icon>
+      <mat-error *ngIf="adminForm.get('email')?.hasError('required')">
+        El email es requerido
+      </mat-error>
+      <mat-error *ngIf="adminForm.get('email')?.hasError('email')">
+        Email inválido
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Contraseña</mat-label>
+      <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password" required>
+      <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" 
+              [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hidePassword" type="button">
+        <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+      </button>
+      <mat-error *ngIf="adminForm.get('password')?.hasError('required')">
+        La contraseña es requerida
+      </mat-error>
+      <mat-error *ngIf="adminForm.get('password')?.hasError('minlength')">
+        La contraseña debe tener al menos 6 caracteres
+      </mat-error>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <ion-button fill="clear" (click)="onCancel()" [disabled]="isSaving">Cancelar</ion-button>
+  <ion-button color="primary" (click)="onSubmit()" 
+          [disabled]="adminForm.invalid || isSaving">
+    <span *ngIf="!isSaving">Guardar</span>
+    <ion-spinner *ngIf="isSaving" name="crescent"></ion-spinner>
+  </ion-button>
+</mat-dialog-actions>
