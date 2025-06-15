@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const LoanSchema = new mongoose.Schema({
   materialId: { type: mongoose.Schema.Types.ObjectId, ref: 'Material', required: true },
@@ -12,4 +12,4 @@ const LoanSchema = new mongoose.Schema({
   updatedAt: { type: Date, default: Date.now }
 });
 
-module.exports = mongoose.model('Loan', LoanSchema);
+export default mongoose.model('Loan', LoanSchema);

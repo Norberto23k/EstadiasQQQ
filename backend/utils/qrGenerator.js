@@ -1,8 +1,10 @@
-const QRCode = require('qrcode');
+import QRCode from 'qrcode';
 
-const generateQRCode = async () => {
-  const randomCode = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+export const generateQRCode = async () => {
+  const randomCode = Math.random().toString(36).substring(2, 15) + 
+                    Math.random().toString(36).substring(2, 15);
   return randomCode;
 };
 
-module.exports = { generateQRCode };
+// Alternative if you want to keep the same export structure:
+// export default { generateQRCode };

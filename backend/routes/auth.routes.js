@@ -1,16 +1,28 @@
-const express = require('express');
-const { body } = require('express-validator');
-const { loginUser, registerUser } = require('../controllers/auth.controller');
+import express from 'express';
+import { body } from 'express-validator';
+import { loginUser, registerUser } from '../controllers/auth.controller.js';
 
 const router = express.Router();
+
+// Validaciones comunes
+const emailValidator = body('email')
+  .isEmail().withMessage('Debe ser un email válido')
+  .normalizeEmail();
+
+const passwordValidator = body('password')
+  .notEmpty().withMessage('La contraseña es requerida')
+  .isLength({ min: 6 }).withMessage('Debe tener al menos 6 caracteres');
 
 // Registro de usuario
 router.post(
   '/register',
   [
-    body('nombre').notEmpty().withMessage('El nombre es obligatorio'),
-    body('email').isEmail().withMessage('Email no válido'),
-    body('password').isLength({ min: 6 }).withMessage('Mínimo 6 caracteres')
+    body('nombre')
+      .notEmpty().withMessage('El nombre es requerido')
+      .trim()
+      .escape(),
+    emailValidator,
+    passwordValidator
   ],
   registerUser
 );
@@ -19,10 +31,11 @@ router.post(
 router.post(
   '/login',
   [
-    body('email').isEmail().withMessage('Email no válido'),
-    body('password').notEmpty().withMessage('La contraseña es obligatoria')
+    emailValidator,
+    body('password')
+      .notEmpty().withMessage('La contraseña es requerida')
   ],
   loginUser
 );
 
-module.exports = router;
+export default router;

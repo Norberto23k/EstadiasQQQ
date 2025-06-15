@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const MaterialSchema = new mongoose.Schema({
   name: { type: String, required: true },
@@ -8,9 +8,13 @@ const MaterialSchema = new mongoose.Schema({
   qrCode: { type: String, required: true, unique: true },
   imageUrl: { type: String },
   category: { type: String, required: true },
-  status: { type: String, enum: ['Disponible', 'Ocupado', 'Mantenimiento'], default: 'Disponible' },
+  status: { 
+    type: String, 
+    enum: ['Disponible', 'Ocupado', 'Mantenimiento'], 
+    default: 'Disponible' 
+  },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }
 });
 
-module.exports = mongoose.model('Material', MaterialSchema);
+export default mongoose.model('Material', MaterialSchema);

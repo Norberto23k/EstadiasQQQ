@@ -1,17 +1,38 @@
-const jwt = require('jsonwebtoken');
+import jwt from 'jsonwebtoken';
 
-function verifyToken(req, res, next) {
-  const token = req.headers['authorization'];
-  if (!token) return res.status(403).json({ message: 'Token no proporcionado' });
+export const verifyToken = (req, res, next) => {
+  try {
+    const token = req.headers['authorization'];
+    
+    if (!token) {
+      return res.status(403).json({ 
+        success: false,
+        message: 'Token no proporcionado' 
+      });
+    }
 
-  const cleanedToken = token.replace('Bearer ', '');
-  jwt.verify(cleanedToken, process.env.JWT_SECRET, (err, decoded) => {
-    if (err) return res.status(401).json({ message: 'Token inválido' });
+    const cleanedToken = token.replace('Bearer ', '');
+    
+    jwt.verify(cleanedToken, process.env.JWT_SECRET, (err, decoded) => {
+      if (err) {
+        return res.status(401).json({ 
+          success: false,
+          message: 'Token inválido o expirado' 
+        });
+      }
 
-    req.userId = decoded.id;
-    req.role = decoded.role;
-    next();
-  });
-}
+      req.userId = decoded.id;
+      req.role = decoded.role;
+      next();
+    });
 
-module.exports = verifyToken;
+  } catch (error) {
+    console.error('Error in token verification:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Error interno del servidor al verificar el token'
+    });
+  }
+};
+
+export default verifyToken;

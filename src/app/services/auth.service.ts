@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { tap, catchError, map } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { ToastController } from '@ionic/angular';
@@ -8,17 +8,23 @@ import { User } from '../interfaces/user.interface';
 import { environment } from '../../environments/environment';
 
 interface AuthResponse {
-  token: string;
-  user: User;
-  expiresIn: number;
+  success: boolean;
+  token?: string;
+  user?: User;
+  expiresIn?: number;
+  message?: string;
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
+  private readonly AUTH_TOKEN_KEY = 'authToken';
+  private readonly USER_DATA_KEY = 'userData';
+  private readonly TOKEN_EXPIRATION_KEY = 'tokenExpiration';
+  
   private currentUserSubject = new BehaviorSubject<User | null>(null);
-  public currentUser = this.currentUserSubject.asObservable();
+  public currentUser$ = this.currentUserSubject.asObservable();
   private tokenExpirationTimer: any;
 
   constructor(
@@ -30,94 +36,131 @@ export class AuthService {
   }
 
   private initializeAuthState(): void {
-    const userData = localStorage.getItem('userData');
     const token = this.getToken();
+    const userData = localStorage.getItem(this.USER_DATA_KEY);
     
     if (token && userData) {
-      const user = JSON.parse(userData);
-      this.currentUserSubject.next(user);
-      this.autoLogout(this.getTokenExpiration());
+      try {
+        const user = JSON.parse(userData);
+        this.currentUserSubject.next(user);
+        const expirationTime = this.getTokenExpiration();
+        if (expirationTime > 0) {
+          this.autoLogout(expirationTime);
+        } else {
+          this.logout();
+        }
+      } catch (error) {
+        console.error('Error parsing user data:', error);
+        this.clearAuthData();
+      }
     }
   }
 
   register(userData: any): Observable<boolean> {
-    return this.http.post<AuthResponse>(`${environment.apiUrl}/auth/register`, userData).pipe(
+    return this.http.post<AuthResponse>(
+      `${environment.apiUrl}/auth/register`, 
+      userData,
+      { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) }
+    ).pipe(
       tap(response => {
-        this.handleAuthentication(
-          response.user,
-          response.token,
-          response.expiresIn
-        );
+        if (!response.success || !response.token) {
+          throw new Error(response.message || 'Registration failed');
+        }
+        this.handleAuthResponse(response);
       }),
       map(() => true),
-      catchError(error => {
-        this.showToast('Error en el registro: ' + error.error.message, 'danger');
-        return of(false);
-      })
+      catchError(error => this.handleAuthError(error, 'registro'))
     );
   }
 
   login(email: string, password: string): Observable<boolean> {
-    return this.http.post<AuthResponse>(`${environment.apiUrl}/auth/login`, { email, password }).pipe(
+    return this.http.post<AuthResponse>(
+      `${environment.apiUrl}/auth/login`, 
+      { email, password },
+      { 
+        headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+        withCredentials: true
+      }
+    ).pipe(
       tap(response => {
-        this.handleAuthentication(
-          response.user,
-          response.token,
-          response.expiresIn
-        );
+        if (!response.success || !response.token) {
+          throw new Error(response.message || 'Authentication failed');
+        }
+        this.handleAuthResponse(response);
       }),
       map(() => true),
       catchError(error => {
-        this.showToast('Error en el login: ' + error.error.message, 'danger');
-        return of(false);
+        const errorMsg = error.error?.message || error.message || 'Error en el login';
+        this.showToast(errorMsg, 'danger');
+        return throwError(() => new Error(errorMsg));
       })
     );
   }
 
-  private handleAuthentication(user: User, token: string, expiresIn: number): void {
-    const expirationDate = new Date(
-      new Date().getTime() + expiresIn * 1000
-    ).toISOString();
+  private handleAuthResponse(response: AuthResponse): void {
+    if (!response.token || !response.user || !response.expiresIn) {
+      throw new Error('Invalid authentication response');
+    }
 
-    localStorage.setItem('userData', JSON.stringify(user));
-    localStorage.setItem('authToken', token);
-    localStorage.setItem('tokenExpiration', expirationDate);
+    const expirationDate = new Date(
+      new Date().getTime() + (response.expiresIn * 1000)
+    );
     
-    this.currentUserSubject.next(user);
-    this.autoLogout(expiresIn * 1000);
+    localStorage.setItem(this.USER_DATA_KEY, JSON.stringify(response.user));
+    localStorage.setItem(this.AUTH_TOKEN_KEY, response.token);
+    localStorage.setItem(this.TOKEN_EXPIRATION_KEY, expirationDate.toISOString());
+    
+    this.currentUserSubject.next(response.user);
+    this.autoLogout(response.expiresIn * 1000);
+    this.showToast('Sesión iniciada correctamente', 'success');
+  }
+
+  private handleAuthError(error: HttpErrorResponse, context: string): Observable<never> {
+    let errorMessage = 'Error desconocido';
+    
+    if (error.status === 401) {
+      errorMessage = 'Credenciales inválidas';
+    } else if (error.error instanceof ErrorEvent) {
+      errorMessage = `Error en el ${context}: ${error.error.message}`;
+    } else {
+      errorMessage = error.error?.message || error.message;
+    }
+    
+    this.showToast(errorMessage, 'danger');
+    return throwError(() => new Error(errorMessage));
   }
 
   logout(): void {
-    this.currentUserSubject.next(null);
-    localStorage.removeItem('userData');
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('tokenExpiration');
-    
-    if (this.tokenExpirationTimer) {
-      clearTimeout(this.tokenExpirationTimer);
-    }
-    
+    this.clearAuthData();
+    this.showToast('Sesión cerrada', 'success');
     this.router.navigate(['/login']);
   }
 
+  private clearAuthData(): void {
+    this.currentUserSubject.next(null);
+    localStorage.removeItem(this.USER_DATA_KEY);
+    localStorage.removeItem(this.AUTH_TOKEN_KEY);
+    localStorage.removeItem(this.TOKEN_EXPIRATION_KEY);
+    
+    if (this.tokenExpirationTimer) {
+      clearTimeout(this.tokenExpirationTimer);
+      this.tokenExpirationTimer = null;
+    }
+  }
+
   getToken(): string | null {
-    return localStorage.getItem('authToken');
+    return localStorage.getItem(this.AUTH_TOKEN_KEY);
   }
 
   getTokenExpiration(): number {
-    const expirationDate = localStorage.getItem('tokenExpiration');
+    const expirationDate = localStorage.getItem(this.TOKEN_EXPIRATION_KEY);
     if (!expirationDate) return 0;
     
-    const remainingTime = new Date(expirationDate).getTime() - new Date().getTime();
-    return remainingTime > 0 ? remainingTime : 0;
+    return Math.max(new Date(expirationDate).getTime() - Date.now(), 0);
   }
 
   isLoggedIn(): boolean {
-    const token = this.getToken();
-    if (!token) return false;
-    
-    const expirationTime = this.getTokenExpiration();
-    return expirationTime > 0;
+    return this.getTokenExpiration() > 0;
   }
 
   getCurrentUser(): User | null {
@@ -135,19 +178,25 @@ export class AuthService {
   }
 
   private autoLogout(expirationDuration: number): void {
+    if (this.tokenExpirationTimer) {
+      clearTimeout(this.tokenExpirationTimer);
+    }
+    
     this.tokenExpirationTimer = setTimeout(() => {
       this.logout();
       this.showToast('Tu sesión ha expirado', 'warning');
     }, expirationDuration);
   }
 
-refreshUserData(updatedUser: User): void {
-  this.currentUserSubject.next(updatedUser);
-  localStorage.setItem('userData', JSON.stringify(updatedUser));
-}
+  refreshUserData(updatedUser: User): void {
+    this.currentUserSubject.next(updatedUser);
+    localStorage.setItem(this.USER_DATA_KEY, JSON.stringify(updatedUser));
+  }
 
-
-  private async showToast(message: string, color: 'success' | 'danger' | 'warning' = 'success') {
+  private async showToast(
+    message: string, 
+    color: 'success' | 'danger' | 'warning' = 'success'
+  ): Promise<void> {
     const toast = await this.toastCtrl.create({
       message,
       duration: 3000,

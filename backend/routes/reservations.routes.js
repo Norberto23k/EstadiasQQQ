@@ -1,13 +1,20 @@
-const express = require('express');
-const router = express.Router();
-const reservationsController = require('../controllers/reservations.controller');
-const authMiddleware = require('../middleware/auth');
-const adminMiddleware = require('../middleware/admin');
+import express from 'express';
+import { 
+  getAllReservations,
+  createReservation,
+  approveReservation,
+  rejectReservation,
+  getReservationsByUser
+} from '../controllers/reservations.controller.js';
+import { verifyToken as authMiddleware } from '../middleware/auth.js';
+import { adminCheck as adminMiddleware } from '../middleware/admin.js';
 
-router.get('/', authMiddleware, reservationsController.getAllReservations);
-router.post('/', authMiddleware, reservationsController.createReservation);
-router.put('/:id/approve', authMiddleware, adminMiddleware, reservationsController.approveReservation);
-router.put('/:id/reject', authMiddleware, adminMiddleware, reservationsController.rejectReservation);
-router.get('/user/:userId', authMiddleware, reservationsController.getReservationsByUser);
+const router = express.Router();
+
+router.get('/', authMiddleware, getAllReservations);
+router.post('/', authMiddleware, createReservation);
+router.put('/:id/approve', authMiddleware, adminMiddleware, approveReservation);
+router.put('/:id/reject', authMiddleware, adminMiddleware, rejectReservation);
+router.get('/user/:userId', authMiddleware, getReservationsByUser);
 
 export default router;
